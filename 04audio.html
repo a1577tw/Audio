@@ -8,102 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <Style>
-        body {
-            background-color: #f0f0f0;
-        }
-
-        .container {
-            width: 400px;
-            margin: 50px auto;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        .logo {
-            display: flex;
-            height: 50px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-
-        }
-
-        .logo-img {
-            height: 100%;
-            margin: 0 10px;
-        }
-
-        .logo-Text {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .logo-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .logo-subtitle {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .statusBar {
-            display: flex;
-            justify-content: space-between;
-            width: 80%;
-            border-bottom: 1px solid #ddd;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 100px;
-        }
-
-        .progress {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            border-bottom: 1px solid #ddd;
-            margin-top: 10px;
-        }
-
-        .musicIcon {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .musicTrack {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            border-bottom: 1px solid #ddd;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-
-        }
-    </Style>
+    <link rel="stylesheet" href="04audio.css" />
 </head>
 
 <body>
@@ -129,18 +34,21 @@
             <section class="musicIcon">
                 <span class="icon" title="prev"><i class="fa-solid fa-backward-step" id="prev"></i></span>
                 <span class="icon" title="return 5sec"><i class="fa-solid fa-angle-left" id="return"></i></span>
-                <span class="icon" title="play"><i class="fa-regular fa-circle-play" id="play"></i></span>
-                <span class="icon" title="pause"><i class="fa-regular fa-circle-pause" id="pause" style="display:none;"></i></span>
+                <span class="icon icon-toggle" title="play/pause">
+                    <i class="fa-regular fa-circle-play" id="play"></i>
+                    <i class="fa-regular fa-circle-pause" id="pause" style="display:none;"></i>
+                </span>
                 <span class="icon" title="stop"><i class="fa-regular fa-circle-stop" id="stop"></i></span>
                 <span class="icon" title="fast 5sec"><i class="fa-solid fa-angle-right" id="fast"></i></span>
                 <span class="icon" title="next"><i class="fa-solid fa-forward-step" id="next"></i></span>
-                <span class="icon" title="volume"><i class="fa-solid fa-volume-high" id="volumeIcon"></i></span>
-                <span class="icon" title="mute"><i class="fa-solid fa-volume-xmark" id="mute"></i></span>
+                <span class="icon icon-toggle" title="volume/mute">
+                    <i class="fa-solid fa-volume-high" id="volume"></i>
+                    <i class="fa-solid fa-volume-xmark" id="mute" style="display:none;"></i>
+                </span>
                 <input type="range" id="volumeRange" value="0" min="0" max="1" step="0.01">
             </section>
             <section class="musicTrack">
-                <h2 id="currentSongName">選擇一首歌曲開始</h2>
-                <p id="currentSongTime">00:00</p>
+                <div id="currentSongName"></div>
             </section>
 
         </main>
@@ -152,7 +60,7 @@
         let Song = ["music/01airball.mp3", "music/02elysees.mp3", "music/03moon.mp3", "music/04nothing.mp3", "music/05rain.mp3", "music/06travel.mp3"]
         let MusicTracks = 0
         //musicIcon控制層
-        function changSong() {
+        function changSong(MusicTracks) {
             MyPlayer.src = Song[MusicTracks];
             MyPlayer.load();
             MyPlayer.play();
@@ -178,14 +86,14 @@
             if (MusicTracks < 0) {
                 MusicTracks = Song.length - 1
             }
-            changSong();
+            changSong(MusicTracks);
         });
         document.getElementById("next").addEventListener("click", () => {
             MusicTracks++
             if (MusicTracks >= Song.length) {
                 MusicTracks = 0
             }
-            changSong();
+            changSong(MusicTracks);
         });
         document.getElementById("return").addEventListener("click", () => {
             MyPlayer.currentTime -= 5
@@ -194,13 +102,18 @@
             MyPlayer.currentTime += 5
         });
         //聲音控制條
+        MyPlayer.volume = 0.8;
+        volumeRange.value = MyPlayer.volume;
         volumeRange.addEventListener("input", () => {
             MyPlayer.volume = volumeRange.value;
+            document.getElementById("mute").style.display = volumeRange.value <= 0 ? "inline" : "none";
+            document.getElementById("volume").style.display = volumeRange.value > 0 ? "inline" : "none";
         });
         //曲終自動撥放下一首
         MyPlayer.addEventListener("ended", () => {
             document.getElementById("next").click();
         });
+
 
         //進度條控制層
         const progress = document.getElementById("progress")
@@ -238,6 +151,14 @@
         MyPlayer.addEventListener("pause", () => {
             status.innerHTML = '狀態:已停止'
         })
+        //下方曲目列表
+        const currentSongName = document.getElementById("currentSongName");
+
+        for (let index = 0; index < Song.length; index++) {
+            currentSongName.innerHTML += `<h2 onclick="changSong(${index})">${getSongName(Song[index])}</h2>`;
+        };
+
+
     </script>
 </body>
 
