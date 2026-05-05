@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>01的音樂撥放器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -12,11 +12,10 @@
 </head>
 
 <body>
-    <audio src="music/01airball.mp3" controls id="MyPlayer"></audio>
-    <hr>
+    <audio src="music/01airball.mp3" id="MyPlayer"></audio>
     <div class="container">
         <header class="logo">
-            <div><img src="icon/logo.png" alt="logo" class="logo-img"></div>
+            <div><img src="music/logo.png" alt="logo" class="logo-img"></div>
             <div class="logo-Text">
                 <span class="logo-title">勞動部勞動力發展署</span>
                 <span class="logo-subtitle">高屏澎東分署</span>
@@ -25,23 +24,25 @@
         <main class="main">
             <section class="statusBar">
                 <span class="status" id="status">已停止</span>
-                <span class="songTitle" id="songTitle">曲名</span>
+                <span class="songTitle" id="songTitle">曲名""</span>
             </section>
             <section class="progress">
                 <span class="progressText" id="progressText"></span>
                 <input type="range" id="progress" value="0" min="0" max="100">
             </section>
             <section class="musicIcon">
-                <span class="icon" title="prev"><i class="fa-solid fa-backward-step" id="prev"></i></span>
-                <span class="icon" title="return 5sec"><i class="fa-solid fa-angle-left" id="return"></i></span>
-                <span class="icon icon-toggle" title="play/pause">
+                <span class="icon" title="上一首" id="prev"><i class="fa-solid fa-backward-step"></i></span>
+                <span class="icon" title="回退5秒" id="return"><i class="fa-solid fa-angle-left"></i></span>
+                <span class="icon icon-toggle" title="開始/暫停" >
                     <i class="fa-regular fa-circle-play" id="play"></i>
                     <i class="fa-regular fa-circle-pause" id="pause" style="display:none;"></i>
                 </span>
-                <span class="icon" title="stop"><i class="fa-regular fa-circle-stop" id="stop"></i></span>
-                <span class="icon" title="fast 5sec"><i class="fa-solid fa-angle-right" id="fast"></i></span>
-                <span class="icon" title="next"><i class="fa-solid fa-forward-step" id="next"></i></span>
-                <span class="icon icon-toggle" title="volume/mute">
+                <span class="icon" title="停止" id="stop"><i class="fa-regular fa-circle-stop"></i></span>
+                <span class="icon" title="快進5秒" id="fast"><i class="fa-solid fa-angle-right"></i></span>
+                <span class="icon" title="下一首" id="next"><i class="fa-solid fa-forward-step"></i></span>
+            </section>
+            <section class="volIcon">
+                <span class="icon icon-toggle" title="靜音">
                     <i class="fa-solid fa-volume-high" id="volume"></i>
                     <i class="fa-solid fa-volume-xmark" id="mute" style="display:none;"></i>
                 </span>
@@ -54,112 +55,7 @@
         </main>
     </div>
 
-    <script>
-        const MyPlayer = document.getElementById("MyPlayer");
-        const volumeRange = document.getElementById("volumeRange");
-        let Song = ["music/01airball.mp3", "music/02elysees.mp3", "music/03moon.mp3", "music/04nothing.mp3", "music/05rain.mp3", "music/06travel.mp3"]
-        let MusicTracks = 0
-        //musicIcon控制層
-        function changSong(MusicTracks) {
-            MyPlayer.src = Song[MusicTracks];
-            MyPlayer.load();
-            MyPlayer.play();
-        };
-
-        document.getElementById("play").addEventListener("click", () => {
-            MyPlayer.play();
-            document.getElementById("play").style.display = "none";
-            document.getElementById("pause").style.display = "inline";
-        });
-        document.getElementById("pause").addEventListener("click", () => {
-            MyPlayer.pause();
-            document.getElementById("pause").style.display = "none";
-            document.getElementById("play").style.display = "inline";
-        });
-        document.getElementById("stop").addEventListener("click", () => {
-            MyPlayer.pause();
-            progressText.value = 0;
-            MyPlayer.currentTime = 0;
-        });
-        document.getElementById("prev").addEventListener("click", () => {
-            MusicTracks--
-            if (MusicTracks < 0) {
-                MusicTracks = Song.length - 1
-            }
-            changSong(MusicTracks);
-        });
-        document.getElementById("next").addEventListener("click", () => {
-            MusicTracks++
-            if (MusicTracks >= Song.length) {
-                MusicTracks = 0
-            }
-            changSong(MusicTracks);
-        });
-        document.getElementById("return").addEventListener("click", () => {
-            MyPlayer.currentTime -= 5
-        });
-        document.getElementById("fast").addEventListener("click", () => {
-            MyPlayer.currentTime += 5
-        });
-        //聲音控制條
-        MyPlayer.volume = 0.8;
-        volumeRange.value = MyPlayer.volume;
-        volumeRange.addEventListener("input", () => {
-            MyPlayer.volume = volumeRange.value;
-            document.getElementById("mute").style.display = volumeRange.value <= 0 ? "inline" : "none";
-            document.getElementById("volume").style.display = volumeRange.value > 0 ? "inline" : "none";
-        });
-        //曲終自動撥放下一首
-        MyPlayer.addEventListener("ended", () => {
-            document.getElementById("next").click();
-        });
-
-
-        //進度條控制層
-        const progress = document.getElementById("progress")
-        const progressText = document.getElementById("progressText")
-        function progressT() {
-            if (!isNaN(MyPlayer.duration)) {
-                let currentTimeMin = parseInt(MyPlayer.currentTime / 60);
-                let currentTimeSce = parseInt(MyPlayer.currentTime % 60);
-                let durationMin = parseInt(MyPlayer.duration / 60);
-                let durationSce = parseInt(MyPlayer.duration % 60);
-                let displayCTMin = currentTimeMin < 10 ? "0" + currentTimeMin : currentTimeMin;
-                let displayCTSce = currentTimeSce < 10 ? "0" + currentTimeSce : currentTimeSce;
-                let displayDTMin = durationMin < 10 ? "0" + durationMin : durationMin;
-                let displayDTSce = durationSce < 10 ? "0" + durationSce : durationSce;
-                progressText.innerHTML = `${displayCTMin}:${displayCTSce}/${displayDTMin}:${displayDTSce}`
-            };
-        };
-        MyPlayer.addEventListener("timeupdate", () => {
-            progress.value = (MyPlayer.currentTime / MyPlayer.duration) * 100;
-            progressT();
-        });
-        progress.addEventListener("input", () => {
-            MyPlayer.currentTime = (progress.value / 100) * MyPlayer.duration
-        });
-        //狀態列顯示
-        const songTitle = document.getElementById("songTitle");
-        const status = document.getElementById("status")
-        function getSongName(path) {
-            return path.split('/').pop().split('.').shift();
-        }
-        MyPlayer.addEventListener("play", () => {
-            songTitle.innerHTML = `曲名:${getSongName(Song[MusicTracks])}`;
-            status.innerHTML = '狀態:播放中'
-        })
-        MyPlayer.addEventListener("pause", () => {
-            status.innerHTML = '狀態:已停止'
-        })
-        //下方曲目列表
-        const currentSongName = document.getElementById("currentSongName");
-
-        for (let index = 0; index < Song.length; index++) {
-            currentSongName.innerHTML += `<h2 onclick="changSong(${index})">${getSongName(Song[index])}</h2>`;
-        };
-
-
-    </script>
+    <script src="04audio.js"></script>
 </body>
 
 </html>
